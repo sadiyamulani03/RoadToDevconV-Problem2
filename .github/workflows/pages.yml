@@ -25,6 +25,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages (source: GitHub Actions) on first run so the
+          # Setup Pages step does not fail on a repo where Pages was never
+          # enabled in Settings.
+          enablement: true
       - name: Upload static site (no build; ES modules + /bytes gateway calls preserved)
         uses: actions/upload-pages-artifact@v3
         with:
