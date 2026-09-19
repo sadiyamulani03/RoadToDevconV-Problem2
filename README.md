@@ -25,10 +25,11 @@ Each record carries its own `format`, `version`, and data:
 
 ## Demo
 
-Hosted static demo (GitHub Pages — enable Pages on `main`, root): open `index.html`, or directly:
+Live demo (verified GitHub Pages static hosting, no build):
 
-- Writer: `writer/index.html` — sign in → Capability check → create → Upload Record → `Open in Independent Reader →`
-- Reader: `reader/index.html` — paste a reference or open `reader/index.html?ref=<64-hex-reference>`
+- Landing: https://sadiyamulani03.github.io/RoadToDevconV-Problem2/
+- Writer: https://sadiyamulani03.github.io/RoadToDevconV-Problem2/writer/
+- Reader: https://sadiyamulani03.github.io/RoadToDevconV-Problem2/reader/
 
 No build step. ES modules work from any static host; the app calls only `https://api.gateway.ethswarm.org/` (CORS `*`).
 
