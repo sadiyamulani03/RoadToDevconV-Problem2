@@ -272,19 +272,49 @@ function includesWord(text, word) {
   )
 }
 
+// ---- CHECK 9 (info): reader deep-link (?ref=) ----
+{
+  const app = read('reader/app.js')
+  const html = read('reader/index.html')
+  const writer = read('writer/writer.js')
+  const supports =
+    app.includes('referenceFromUrl') &&
+    app.includes("?ref=") &&
+    writer.includes('reader/index.html?ref=')
+  const entrypointIntact = html.includes('src="./app.js"')
+  record(9, 'Reader deep-link', 'reader/app.js:referenceFromUrl + writer success link reader/?ref=', supports && entrypointIntact, `deepLink=${supports}`)
+}
+
+// ---- CHECK 10 (info): writer -> Swarm -> reader flow documented ----
+{
+  const readme = read('README.md')
+  const landing = exists('index.html') ? read('index.html') : ''
+  const documented =
+    readme.includes('Capability check') &&
+    readme.includes('Independent Reader') &&
+    readme.includes('POST /bytes') &&
+    (landing.includes('writer/index.html') || readme.includes('writer/index.html'))
+  record(10, 'Documented flow', 'README flow diagram + landing links writer/reader', documented, `documented=${documented}`)
+}
+
 // ---- output ----
 console.log('\n| Check | Requirement               | Evidence                       | Status    |')
 console.log('| ----- | ------------------------- | ------------------------------ | --------- |')
-for (const r of results) {
+for (const r of results.filter((x) => x.check <= 8)) {
   console.log(`| ${r.check}     | ${r.requirement.padEnd(25)} | ${r.evidence.slice(0, 60).padEnd(60)} | ${r.pass ? 'PASS' : 'FAIL'}    |`)
 }
 console.log('')
 for (const r of results) {
   console.log(`Check ${r.check} (${r.requirement}): ${r.pass ? 'PASS' : 'FAIL'} — ${r.detail}`)
 }
-const failed = results.filter((r) => !r.pass)
-if (failed.length) {
-  console.error(`\nAUDIT FAIL: ${failed.length} check(s) failing.`)
+const failedCore = results.filter((r) => r.check <= 8 && !r.pass)
+const failedInfo = results.filter((r) => r.check > 8 && !r.pass)
+if (failedCore.length) {
+  console.error(`\nAUDIT FAIL: ${failedCore.length} core check(s) failing.`)
+  process.exit(1)
+}
+if (failedInfo.length) {
+  console.error(`\nAUDIT WARN: ${failedInfo.length} info check(s) failing (non-blocking).`)
   process.exit(1)
 } else {
   console.log('\nAUDIT PASS: all eight checks pass.')

@@ -3,54 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Deccan Birders — Writer (Swarm subsidised gateway)</title>
+  <title>Deccan Birders — Take Your Records With You</title>
+  <meta name="description" content="Store bird sightings as portable, self-describing records on Swarm that independent software can read." />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="card">
-    <h1>Deccan Birders — Sighting Writer</h1>
-    <p class="muted">
-      Fresh Swarm ID users have no stamp of their own. This writer uploads through the
-      subsidised gateway (<code>https://api.gateway.ethswarm.org/</code>) using the raw
-      <code>/bytes</code> family. Uploads are blocked until capability is confirmed —
-      signing in alone never enables the upload button.
-    </p>
+  <main class="page">
+    <header class="hero">
+      <p class="kicker">Road to Devcon V — Problem 2 · “Take your records with you”</p>
+      <h1>TAKE YOUR RECORDS WITH YOU</h1>
+      <p class="lede">Store your bird sightings as portable records that independent software can read — not data trapped inside one app.</p>
+    </header>
 
-    <section class="row">
-      <div>
-        <h2>1. Sign in</h2>
-        <button id="signin-btn" type="button">Sign in with Swarm ID (demo)</button>
-        <p id="signin-status" class="status" role="status">Not signed in.</p>
+    <section class="card" aria-labelledby="why-h">
+      <h2 id="why-h">Why this matters</h2>
+      <p>Exporting data is not the same as owning a portable record.</p>
+      <div class="flows">
+        <div class="flow">
+          <h3>Traditional flow</h3>
+          <p class="flowline">App → Export → Another app must understand the export</p>
+        </div>
+        <div class="flow">
+          <h3>Portable-record flow</h3>
+          <p class="flowline">Writer → Self-describing record → Swarm → Independent Reader</p>
+        </div>
       </div>
-      <div>
-        <h2>2. Confirm upload capability</h2>
-        <button id="capability-btn" type="button">Check upload capability</button>
-        <p id="capability-status" class="status" role="status">Capability not checked yet.</p>
-      </div>
+      <p class="muted">Each record carries its own <code>format</code>, <code>version</code>, and data — so software that never shipped with this Writer can still understand it.</p>
     </section>
 
-    <section>
-      <h2>3. Record a sighting</h2>
+    <section class="card" aria-labelledby="signin-h">
+      <h2 id="signin-h">1 · Sign in with Swarm ID</h2>
+      <p><span id="auth-badge" class="badge">Not signed in</span></p>
+      <div class="row">
+        <button id="signin-btn" type="button">Sign in with Swarm ID</button>
+        <button id="signout-btn" type="button" class="ghost" hidden>Sign out</button>
+      </div>
+      <p id="signin-status" class="status" role="status">Not signed in.</p>
+      <p class="muted">Real Swarm ID is attempted first (popup via the official client). If it is unavailable — offline, blocked popup, no account — the app falls back to a clearly labeled demo session. Either way, no credentials are stored. Signing in alone never enables uploads.</p>
+    </section>
+
+    <section class="card" aria-labelledby="cap-h">
+      <h2 id="cap-h">2 · Confirm upload capability</h2>
+      <button id="capability-btn" type="button">Check upload capability</button>
+      <p id="capability-status" class="status" role="status">Capability not checked yet.</p>
+      <p class="muted">Fresh Swarm ID users hold no stamp of their own. This writer uploads through the subsidised gateway (<code>https://api.gateway.ethswarm.org/</code>) using the raw <code>/bytes</code> family.</p>
+    </section>
+
+    <section class="card" aria-labelledby="record-h">
+      <h2 id="record-h">3 · Create a sighting</h2>
       <form id="sighting-form">
-        <label>Species <input name="species" required placeholder="Indian Roller" /></label>
-        <label>Count <input name="count" type="number" min="1" step="1" value="2" required /></label>
-        <label>Location <input name="location" required placeholder="Deccan scrub" /></label>
-        <label>Observer <input name="observer" required placeholder="demo-observer" /></label>
-        <label>Observed at <input name="observedAt" placeholder="2026-01-15T07:30:00.000Z (blank = now)" /></label>
-        <label>Notes <textarea name="notes" rows="2" placeholder="Optional field notes"></textarea></label>
-        <button id="upload-btn" type="submit" disabled>Upload to Swarm</button>
+        <label>Species <input name="species" required placeholder="Indian Roller" value="Indian Roller" /></label>
+        <div class="grid2">
+          <label>Date <input name="observedAt" placeholder="1998-05-14 (blank = now)" value="1998-05-14" /></label>
+          <label>Count <input name="count" type="number" min="1" step="1" value="1" required /></label>
+        </div>
+        <label>Place <input name="location" required placeholder="Pashan Lake, Pune" value="Pashan Lake, Pune" /></label>
+        <label>Observer <input name="observer" required placeholder="Deccan Birders" value="Deccan Birders" /></label>
+        <label>Notes <textarea name="notes" rows="2" placeholder="First recorded sighting in the collection.">First recorded sighting in the collection.</textarea></label>
+        <button id="upload-btn" type="submit" disabled>Upload Record</button>
       </form>
+      <ol id="upload-steps" class="steps" hidden>
+        <li data-step="prepare">Preparing portable record</li>
+        <li data-step="capability">Checking upload capability</li>
+        <li data-step="upload">Uploading to Swarm</li>
+        <li data-step="stored">Record stored</li>
+      </ol>
       <div id="upload-error" class="error" role="alert" hidden></div>
       <div id="upload-ok" class="ok" role="status" hidden></div>
       <p class="muted">Serialized bytes preview (must contain <code>format</code> + <code>version</code>):</p>
       <pre id="bytes-preview" class="preview">—</pre>
     </section>
 
-    <p class="muted">
-      Independent reader: open <code>../reader/index.html</code> (separate app, separate entrypoint).
-      It downloads through the same <code>/bytes</code> family and validates
-      <code>format</code>/<code>version</code> on its own.
-    </p>
+    <section class="card" aria-labelledby="hist-h">
+      <h2 id="hist-h">Recent records on this device</h2>
+      <p class="muted">Local convenience only — the Swarm record itself stays sufficient. Clearing browser storage never harms portability.</p>
+      <ul id="history-list" class="history"><li class="muted">No uploads yet on this device.</li></ul>
+    </section>
+
+    <footer class="foot muted">
+      Independent reader lives separately at <code>../reader/index.html</code> — own entrypoint, own download, no Writer code.
+    </footer>
   </main>
   <script type="module" src="./writer.js"></script>
 </body>

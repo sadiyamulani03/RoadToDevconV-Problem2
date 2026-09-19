@@ -4,30 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deccan Birders — Independent Reader</title>
+  <meta name="description" content="An independent reader that fetches portable bird records directly from Swarm — without the Writer application." />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="card">
-    <h1>Deccan Birders — Independent Reader</h1>
-    <p class="muted">
-      Standalone reader with its own entrypoint. It reaches Swarm directly,
-      downloads through the same <code>/bytes</code> family used when storing,
-      parses the portable record, validates <code>format</code>/<code>version</code>,
-      and renders — without importing any authoring-side code. The only shared module is
-      <code>../shared/format.js</code> (standalone schema).
-    </p>
-    <form id="reader-form">
-      <label>Swarm reference (64-hex)
-        <input id="ref-input" required minlength="64" maxlength="64" placeholder="Paste reference from the uploader" spellcheck="false" />
-      </label>
-      <button id="load-btn" type="submit">Download &amp; render</button>
-    </form>
-    <div id="reader-error" class="error" role="alert" hidden></div>
-    <div id="reader-result" class="ok" role="status" hidden></div>
-    <p class="muted">
-      The authoring app lives separately at <code>../writer/index.html</code>. This page shares no
-      components, storage helpers, or rendering code with it.
-    </p>
+  <main class="page">
+    <header class="hero">
+      <p class="kicker">Independent Reader · Reading directly from Swarm</p>
+      <h1>Independent Reader</h1>
+      <p class="lede">This reader does not use the Writer application. It fetches the record from Swarm, validates its portable format, and renders it — on its own.</p>
+    </header>
+
+    <section class="card">
+      <form id="reader-form">
+        <label>Swarm reference (64-hex)
+          <input id="ref-input" required minlength="64" maxlength="64" placeholder="Paste reference from the uploader — or open with ?ref=" spellcheck="false" />
+        </label>
+        <button id="load-btn" type="submit">Download &amp; render</button>
+      </form>
+      <ol id="reader-steps" class="steps" hidden>
+        <li data-step="fetch">Fetching record from Swarm</li>
+        <li data-step="validate">Validating portable format</li>
+        <li data-step="render">Rendering record</li>
+      </ol>
+      <div id="reader-error" class="error" role="alert" hidden></div>
+      <div id="reader-result" class="record" role="status" hidden></div>
+    </section>
+
+    <section class="card muted-card">
+      <h2>How independence is proven</h2>
+      <p class="muted">Own entrypoint (<code>reader/index.html</code>), own download (<code>GET /bytes/&lt;reference&gt;</code>), own parse + validate, own render. The only shared module is <code>../shared/format.js</code> (standalone schema). The authoring app lives separately and shares no components, storage helpers, or rendering code with this page.</p>
+    </section>
   </main>
   <script type="module" src="./app.js"></script>
 </body>

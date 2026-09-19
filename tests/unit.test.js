@@ -193,3 +193,45 @@ describe('specific failure reasons reach user-visible output (Check 7)', () => {
     resetUploadCapability()
   })
 })
+
+describe('demo polish: deep-link, history, honest auth', () => {
+  it('reader supports ?ref= deep-link without writer imports', () => {
+    const app = read('reader/app.js')
+    assert.ok(app.includes('referenceFromUrl'), 'reader must define referenceFromUrl')
+    assert.ok(app.includes('?ref='), 'reader must read ?ref=')
+    assert.ok(read('writer/writer.js').includes('reader/index.html?ref='), 'writer success must deep-link the reader')
+  })
+
+  it('writer keeps a local-only history key and labels demo mode', () => {
+    const writerJs = read('writer/writer.js')
+    assert.ok(writerJs.includes('deccan-birders-recent'), 'history key present')
+    assert.ok(writerJs.includes('Demo session'), 'demo fallback is labeled, never disguised')
+    assert.ok(writerJs.includes('uploadCapability.available'), 'capability pre-gate preserved')
+  })
+
+  it('demo session carries no credentials', async () => {
+    const { demoSession } = await import('../writer/swarm-auth.js')
+    const s = demoSession()
+    assert.equal(s.signedIn, true)
+    assert.equal(s.mode, 'demo')
+    assert.ok(!('privateKey' in s) && !('mnemonic' in s) && !('token' in s))
+  })
+
+  it('swarm-auth uses only the confirmed client API surface', () => {
+    const auth = read('writer/swarm-auth.js')
+    for (const api of ['SwarmIdClient', 'initialize()', 'connect()', 'connectionInfo', 'destroy()']) {
+      assert.ok(auth.includes(api), `missing confirmed API ${api}`)
+    }
+    assert.ok(!auth.includes('uploadData'), 'uploads stay on the audited /bytes path, never the identity client')
+  })
+
+  it('reader renders proof-of-portability and keeps the five steps', () => {
+    const app = read('reader/app.js').toLowerCase()
+    for (const step of ['obtain', 'download', 'parse', 'validate', 'render']) {
+      assert.ok(app.includes(step), `reader missing step ${step}`)
+    }
+    const raw = read('reader/app.js')
+    assert.ok(raw.includes('Portable Record'), 'proof card present')
+    assert.ok(raw.includes('None on Writer'), 'reader-independence proof present')
+  })
+})

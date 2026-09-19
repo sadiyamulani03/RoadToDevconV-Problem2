@@ -10,6 +10,7 @@
     "build": "node scripts/audit.js",
     "test": "node --test tests/unit.test.js",
     "audit": "node scripts/audit.js",
+    "verify:live": "node scripts/live-verify.js",
     "writer": "node writer/cli.js --help",
     "reader": "node reader/cli.js --help"
   },
